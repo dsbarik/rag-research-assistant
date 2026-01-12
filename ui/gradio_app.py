@@ -73,7 +73,7 @@ def get_documents():
         else:
             df = pd.DataFrame(columns=["id", "filename", "created_at"])
 
-        choices = [(f"{d['filename']} (ID: {d['id']})", d["id"]) for d in data]
+        choices = [(f"{d['filename']}", d["id"]) for d in data]
         return df, gr.update(choices=choices, value=None)
 
     except Exception as e:
@@ -97,7 +97,7 @@ def delete_selected_document(doc_id):
 
 # --- UI LAYOUT ---
 
-with gr.Blocks(title="RAG Assistant", theme=gr.themes.Soft()) as demo:
+with gr.Blocks(title="RAG Assistant", theme=gr.themes.Soft()) as demo: # type: ignore
     gr.Markdown("# 🤖 RAG Research Assistant")
 
     # Conversation ID state to maintain context across messages
