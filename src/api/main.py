@@ -5,9 +5,9 @@ import gc
 from fastapi import FastAPI
 from sqlmodel import SQLModel
 
-from infra.db.session import engine
+from src.infra.db.session import engine
 from .router import router
-from config import DATA_DIR
+from src.config import DATA_DIR
 
 
 @asynccontextmanager

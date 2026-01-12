@@ -1,12 +1,10 @@
-import shutil
 from fastapi import APIRouter, UploadFile, File, Depends, HTTPException
 from sqlmodel import Session
 from typing import List
 
 # Import your settings and infra
-from config import DOCUMENTS_DIR
-from infra.db.session import get_session
-from orchestrator.service import OrchestratorService
+from src.infra.db.session import get_session
+from src.orchestrator.service import OrchestratorService
 from src.api.schemas import ChatRequest, ChatResponse, IngestResponse, DocumentResponse
 
 router = APIRouter()
@@ -21,14 +19,16 @@ async def ingest_document(
         raise HTTPException(status_code=400, detail="File must have a filename.")
     
     try:
-        permanent_path = DOCUMENTS_DIR / file.filename
-        
-        with open(permanent_path, "wb") as buffer:
-            shutil.copyfileobj(file.file, buffer)
-
         service = OrchestratorService(session)
         
-        doc_id, chunks_processed = service.ingest_file(str(permanent_path), file.filename)
+        doc_id, chunks_processed = service.ingest_file(file.file, file.filename)
+        
+        if doc_id == 0 or chunks_processed == 0:
+            return IngestResponse(**{
+                "status": "skipped",
+                "chunks_processed": chunks_processed,
+                "document_id": doc_id  
+            })
         
         return IngestResponse(**{
             "status": "success",

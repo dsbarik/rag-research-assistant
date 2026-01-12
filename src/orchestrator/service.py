@@ -23,8 +23,7 @@ class OrchestratorService:
         permanent_path = DOCUMENTS_DIR / filename
         
         try:
-            # 1. Save the stream to our permanent storage
-            with open(permanent_path, "wb") as buffer:
+            with open(permanent_path, "xb") as buffer:
                 shutil.copyfileobj(file_stream, buffer)
         except Exception as e:
             raise IOError(f"Failed to save file to storage: {str(e)}")
