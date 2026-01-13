@@ -1,5 +1,5 @@
+"fastapi[all]"
 chromadb==1.4.0
-fastapi==0.128.0
 fitz==0.0.1.dev2
 gradio==6.3.0
 pandas==2.3.3
