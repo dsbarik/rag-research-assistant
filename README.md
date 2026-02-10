@@ -369,7 +369,7 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 
 ## 📞 Support
 
-- 📧 Email: <your-email@example.com>
+- 📧 Email: <barikdibyasampad@gmail.com>
 - 🐛 Issues: [GitHub Issues](https://github.com/dsbarik/rag-research-assistant/issues)
 - 💬 Discussions: [GitHub Discussions](https://github.com/dsbarik/rag-research-assistant/discussions)
 
