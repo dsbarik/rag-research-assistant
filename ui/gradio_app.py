@@ -107,7 +107,7 @@ def delete_selected_document(doc_id):
 
 # --- UI LAYOUT ---
 
-with gr.Blocks(title="RAG Assistant", theme=gr.themes.Soft()) as demo:
+with gr.Blocks(title="RAG Assistant", theme=gr.themes.Soft()) as demo: # type: ignore
     gr.Markdown("# 🤖 RAG Research Assistant")
 
     conversation_id_state = gr.State(value=None)
