@@ -134,22 +134,28 @@ ollama list
 ### 3. Service Execution
 
 **Backend API:**
+
 ```bash
 fastapi dev src/api/main.py
 ```
+
 - API Endpoint: `http://localhost:8000`
 - API Documentation: `http://localhost:8000/docs`
 
 **Gradio Interface:**
+
 ```bash
 python ui/gradio_app.py
 ```
+
 - Interface URL: `http://localhost:7860`
 
 **Streamlit Interface:**
+
 ```bash
 streamlit run ui/streamlit_app.py
 ```
+
 - Interface URL: `http://localhost:8501`
 
 ---
@@ -157,10 +163,12 @@ streamlit run ui/streamlit_app.py
 ## Usage Guide
 
 ### Document Management
+
 - **Ingestion**: Upload PDF or text files via the Knowledge Base tab. The system processes these into semantic chunks for the vector store.
 - **Administration**: View uploaded documents and remove unnecessary files through the management interface.
 
 ### Conversational Interface
+
 - **Interaction**: Use the chat interface to query the ingested knowledge base.
 - **Grounding**: The system retrieves relevant context and generates responses grounded in the provided documents.
 - **Session Management**: Use the "New Chat" feature to reset conversation history.
@@ -168,7 +176,9 @@ streamlit run ui/streamlit_app.py
 ### REST API Reference
 
 #### Document Ingestion
+
 `POST /api/v1/ingest`
+
 ```bash
 curl -X POST "http://localhost:8000/api/v1/ingest" \
   -H "Content-Type: multipart/form-data" \
@@ -176,7 +186,9 @@ curl -X POST "http://localhost:8000/api/v1/ingest" \
 ```
 
 #### Contextual Chat
+
 `POST /api/v1/chat`
+
 ```bash
 curl -X POST "http://localhost:8000/api/v1/chat" \
   -H "Content-Type: application/json" \
@@ -187,6 +199,7 @@ curl -X POST "http://localhost:8000/api/v1/chat" \
 ```
 
 #### Document Metadata
+
 `GET /api/v1/documents`
 `DELETE /api/v1/documents/{id}`
 
@@ -263,6 +276,7 @@ The project is actively evolving with the following planned enhancements:
 ## Contributing
 
 Contributions are welcome. Please follow these steps:
+
 1. Fork the repository.
 2. Create a feature branch: `git checkout -b feature/your-feature-name`.
 3. Commit changes: `git commit -m 'Add descriptive commit message'`.
