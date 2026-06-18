@@ -1,9 +1,17 @@
 "fastapi[all]"
-chromadb==1.4.0
-fitz==0.0.1.dev2
+chromadb==1.5.1
+docling
 gradio==6.3.0
 pandas==2.3.3
 pydantic==2.12.5
 requests==2.32.5
 SQLAlchemy==2.0.45
 sqlmodel==0.0.31
+sentence-transformers
+langchain-ollama
+# LlamaIndex — document ingestion & retrieval
+llama-index-core
+llama-index-readers-docling
+llama-index-vector-stores-chroma
+llama-index-embeddings-huggingface
+streamlit

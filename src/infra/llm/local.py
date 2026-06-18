@@ -1,100 +1,85 @@
-from typing import List, Dict, Optional
-import requests
-from .base import BaseLLM
+from typing import Dict, List, Optional
 
-class OllamaLLM(BaseLLM):
-    
+import requests
+from langchain_ollama import ChatOllama
+
+
+class OllamaLLM:
     def __init__(
-        self,
-        model: str = "llama3.2",
-        base_url: str = "http://localhost:11434"
+        self, model: str = "llama3.2", base_url: str = "http://localhost:11434"
     ):
         self.model = model
         self.base_url = base_url
-        self.generate_endpoint = f"{base_url}/api/generate"
-        self.tags_endpoint = f"{base_url}/api/tags"
-    
+
     def is_available(self) -> bool:
+        # LangChain doesn't have a native "ping" method, so we keep this lightweight check
         try:
-            response = requests.get(self.tags_endpoint, timeout=2)
+            response = requests.get(f"{self.base_url}/api/tags", timeout=2)
             return response.status_code == 200
         except requests.RequestException:
             return False
-    
+
     def list_models(self) -> List[str]:
         try:
-            response = requests.get(self.tags_endpoint)
+            response = requests.get(f"{self.base_url}/api/tags", timeout=2)
             response.raise_for_status()
             models = response.json().get("models", [])
             return [model["name"] for model in models]
         except requests.RequestException:
             return []
-    
+
     def generate(
         self,
         messages: List[Dict[str, str]],
         temperature: float = 0.7,
-        max_tokens: Optional[int] = None
+        max_tokens: Optional[int] = None,
     ) -> str:
-        
-        prompt = self._format_messages(messages)
-        
-        payload = {
-            "model": self.model,
-            "prompt": prompt,
-            "stream": False,
-            "options": {
-                "temperature": temperature
-            }
-        }
-        
-        if max_tokens:
-            payload["options"]["num_predict"] = max_tokens
-        
-        response = requests.post(self.generate_endpoint, json=payload)
-        response.raise_for_status()
-        
-        result = response.json()
-        return result.get("response", "")
-    
-    def _format_messages(self, messages: List[Dict[str, str]]) -> str:
-        formatted = []
-        for msg in messages:
-            role = msg.get("role", "user")
-            content = msg.get("content", "")
-            if role == "system":
-                formatted.append(f"System: {content}")
-            elif role == "user":
-                formatted.append(f"User: {content}")
-            elif role == "assistant":
-                formatted.append(f"Assistant: {content}")
-        
-        return "\n\n".join(formatted)
-    
+        # 1. Initialize LangChain's ChatOllama client
+        chat_llm = ChatOllama(
+            model=self.model,
+            base_url=self.base_url,
+            temperature=temperature,
+            num_predict=max_tokens,
+        )
+
+        # 2. LangChain natively accepts standard dictionary message lists!
+        response = chat_llm.invoke(messages)
+
+        # 3. Return the string content from the AIMessage object
+        return response.content
+
     def generate_with_context(
         self,
         query: str,
         context: str,
         conversation_history: List[Dict[str, str]] | None = None,
-        temperature: float = 0.7
+        temperature: float = 0.7,
     ) -> str:
-        
         messages = []
-        
-        # 1. System Prompt with Context
+
         system_content = (
-            "You are a helpful research assistant. "
-            "Use the provided context to answer the user's question.\n\n"
+            "You are an expert research assistant dedicated to providing accurate, verified information.\n\n"
+            "STRICT GUIDELINES:\n"
+            "1. **Context Priority**: Answer strictly based on the 'Context' provided below if possible.\n"
+            "2. **Verification & Labeling**:\n"
+            "   - Never present generated/inferred content as fact.\n"
+            "   - If information is not in the context and you use general knowledge, you MUST label it.\n"
+            "   - Start sentences with **[Inference]**, **[Speculation]**, or **[Unverified]** if the content is not directly supported by the context.\n"
+            "   - If you cannot verify something, say: 'I cannot verify this' or 'My knowledge base does not contain that'.\n"
+            "3. **Tone & Style**:\n"
+            "   - Maintain a professional, objective, academic tone.\n"
+            "   - Do not paraphrase or reinterpret user input unless requested.\n"
+            "   - **CRITICAL**: All mathematical formulas, equations, and symbols MUST be written in LaTeX format (e.g., $E=mc^2$).\n"
+            "4. **Forbidden Absolutes**: Unless sourced from context, label claims using words like 'Prevent', 'Guarantee', 'Fixes', 'Eliminates', 'Ensures'.\n"
+            "5. **Correction Protocol**: If you realize a previous mistake, say: 'Correction: I previously made an unverified claim...'.\n\n"
             f"Context:\n{context}"
         )
-        
+
         messages.append({"role": "system", "content": system_content})
-        
-        # 2. Add History
+
         if conversation_history:
             messages.extend(conversation_history)
-        
-        # 3. Add User Query
+
         messages.append({"role": "user", "content": query})
-        
+
         return self.generate(messages, temperature=temperature)

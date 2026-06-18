@@ -1,9 +1,0 @@
-from .settings import DATA_DIR, DOCUMENTS_DIR, DATABASE_URL, VECTOR_STORE_DIR, LLM_MODEL_NAME
-
-__all__ = [
-    "DATA_DIR",
-    "DOCUMENTS_DIR",
-    "VECTOR_STORE_DIR",
-    "DATABASE_URL",
-    "LLM_MODEL_NAME"
-]

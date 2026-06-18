@@ -1,19 +1,20 @@
-from chromadb import Documents, EmbeddingFunction, Embeddings
-from chromadb.utils import embedding_functions
+from llama_index.embeddings.huggingface import HuggingFaceEmbedding
+
+from src.config.settings import EMBEDDING_MODEL
 
 
-class SentenceTransformerEmbeddings(EmbeddingFunction):
+def get_embedding_model() -> HuggingFaceEmbedding:
+    """
+    Returns a LlamaIndex HuggingFaceEmbedding using the model defined in settings.
 
-    def __init__(self, model_name: str = "all-MiniLM-L6-v2"):
-        self._impl = embedding_functions.SentenceTransformerEmbeddingFunction(
-            model_name=model_name
-        )
-
-    def __call__(self, documents: Documents) -> Embeddings:
-        return self._impl(documents)
-
-
-def get_embedding_function(
-    model_name: str = "all-MiniLM-L6-v2",
-) -> EmbeddingFunction:
-    return SentenceTransformerEmbeddings(model_name=model_name)
+    Model: BAAI/bge-large-en-v1.5
+      - 1024-dim dense embeddings
+      - Top MTEB performance for retrieval tasks
+      - Strong on scientific and technical text
+      - No trust_remote_code required
+    """
+    return HuggingFaceEmbedding(
+        model_name=EMBEDDING_MODEL,
+        embed_batch_size=32,
+        device="cpu",
+    )

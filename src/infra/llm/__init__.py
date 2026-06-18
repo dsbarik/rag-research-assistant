@@ -1,4 +1,3 @@
-from .base import BaseLLM
 from .local import OllamaLLM
 
-__all__ = ["BaseLLM", "OllamaLLM"]
+__all__ = ["OllamaLLM"]

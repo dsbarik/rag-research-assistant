@@ -1,47 +1,47 @@
-# 🤖 RAG Research Assistant
+# RAG Research Assistant
 
-> A privacy-first, locally-run Retrieval-Augmented Generation (RAG) system for intelligent conversations with your documents.
+A privacy-centric, locally deployed Retrieval-Augmented Generation (RAG) system designed for secure and intelligent conversations with personal or organizational documents.
 
-[![Python 3.11+](https://img.shields.io/badge/python-3.11+-blue.svg)](https://www.python.org/downloads/)
-[![FastAPI](https://img.shields.io/badge/FastAPI-0.100+-green.svg)](https://fastapi.tiangolo.com/)
-[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
+[![Python 3.11+](https://img.shields.io/badge/python-3.11+-blue.svg)](https://www.python.org/downloads/) [![FastAPI](https://img.shields.io/badge/FastAPI-0.100+-green.svg)](https://fastapi.tiangolo.com/) [![Ollama](https://img.shields.io/badge/Ollama-LLM-orange.svg)](https://ollama.ai/) [![ChromaDB](https://img.shields.io/badge/ChromaDB-VectorStore-blueviolet.svg)](https://www.trychroma.com/) [![Gradio](https://img.shields.io/badge/Gradio-UI-orange.svg)](https://gradio.app/) [![Streamlit](https://img.shields.io/badge/Streamlit-UI-ff4b4b.svg)](https://streamlit.io/) [![Pytest](https://img.shields.io/badge/Pytest-Tests-green.svg)](https://docs.pytest.org/) [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 
 ---
 
-## 📖 Overview
+## Overview
 
-RAG Research Assistant enables **private, context-aware conversations** with your documents using state-of-the-art retrieval and generation techniques. Everything runs locally on your machine—no data leaves your system.
+The RAG Research Assistant provides a secure framework for context-aware conversations with documents using state-of-the-art retrieval and generation techniques. The system is designed for complete local execution, ensuring that no data leaves the host environment.
 
-### What is RAG?
+### Core Concepts: Retrieval-Augmented Generation
 
-**Retrieval-Augmented Generation** combines:
+The system integrates three primary components to ensure accuracy and relevance:
 
-- 🔍 **Vector Search**: Find relevant document chunks using semantic similarity
-- 🤖 **LLM Generation**: Generate accurate answers grounded in your documents
-- 💬 **Conversation Memory**: Maintain context across multi-turn conversations
+- **Vector Search**: Employs semantic similarity to retrieve the most relevant document segments.
+- **LLM Generation**: Produces grounded responses based on the retrieved context.
+- **Conversation Memory**: Manages state and context across multi-turn interactions.
 
 ---
 
-## ✨ Key Features
+## Key Features
 
 | Feature | Description |
 | --------- | ------------- |
-| 🔒 **100% Private** | All processing happens locally—no cloud APIs, no data sharing |
-| 🚀 **Production-Ready** | FastAPI backend with async support and proper error handling |
-| 🎨 **Modern UI** | Clean Gradio interface for document management and chat |
-| 📚 **Multi-Format** | Support for PDF and text files with intelligent chunking |
-| 🧠 **Smart Context** | Automatic conversation windowing and summarization |
-| 🔄 **Persistent Storage** | ChromaDB vector store and SQLite metadata database |
-| 🧪 **Well-Tested** | Comprehensive test suite with pytest |
+| **Data Privacy** | All processing is performed locally without the use of cloud APIs. |
+| **Production Architecture** | FastAPI backend with asynchronous support and robust error handling. |
+| **Flexible Interfaces** | Support for both Gradio and Streamlit user interfaces. |
+| **Multi-Format Ingestion** | Support for PDF and text files with intelligent chunking strategies. |
+| **Context Management** | Automatic conversation windowing and summarization. |
+| **Persistent Storage** | Integrated ChromaDB vector store and SQLite metadata management. |
+| **Verified Quality** | Comprehensive test suite implemented with pytest. |
 
 ---
 
-## 🏗️ Architecture
+## Architecture
+
+### System Diagram
 
 ```bash
 ┌─────────────────────────────────────┐
-│      Gradio UI / REST API           │
-│   (User Interface Layer)            │
+│  Gradio / Streamlit UI / REST API     │
+│   (User Interface Layer)              │
 └─────────────────────────────────────┘
                 ↓
 ┌─────────────────────────────────────┐
@@ -77,126 +77,106 @@ rag-research-assistant/
 │   ├── orchestrator/    # Main business logic coordinator
 │   └── utils/           # Logging and utilities
 ├── ui/
-│   ├── gradio_app.py    # Production UI (use this)
-│   └── main.py          # UI experimentation sandbox
+│   ├── gradio_app.py    # Gradio-based UI
+│   └── streamlit_app.py # Streamlit-based UI
 ├── tests/               # Pytest test suite
-├── data/                # Auto-created: stores DB and vectors
+├── data/                # Local storage for databases and vectors
 ├── requirements.txt
 └── README.md
 ```
 
 ---
 
-## 📋 Prerequisites
+## Prerequisites
 
-Before you begin, ensure you have:
+The following components are required for installation and operation:
 
-- **Python 3.11 or higher** ([Download](https://www.python.org/downloads/))
-- **Ollama** installed and running ([Installation Guide](https://ollama.ai/download))
-- **Git** for cloning the repository
+- **Python 3.11+**: [Download](https://www.python.org/downloads/)
+- **Ollama**: Installed and running. [Installation Guide](https://ollama.ai/download)
+- **Git**: For repository cloning.
 
-### Verify Ollama Installation
+### Verify Ollama Service
 
 ```bash
-# Check if Ollama is running
+# Check if the Ollama service is responsive
 curl http://localhost:11434/api/tags
-
-# Should return a JSON response with available models
 ```
 
 ---
 
-## 🚀 Quick Start
+## Installation and Setup
 
-### 1. Clone and Install Dependencies
+### 1. Environment Setup
 
 ```bash
 # Clone the repository
 git clone https://github.com/dsbarik/rag-research-assistant.git
 cd rag-research-assistant
 
-# Create a virtual environment (recommended)
+# Initialize virtual environment
 python -m venv venv
-source venv/bin/activate  # On Windows: venv\Scripts\activate
+source venv/bin/activate  # Windows: venv\Scripts\activate
 
 # Install dependencies
 pip install -r requirements.txt
 ```
 
-### 2. Download the LLM Model
+### 2. Model Deployment
 
 ```bash
-# Pull the default model (llama3.2)
+# Pull the required LLM model
 ollama pull llama3.2
 
-# Verify the model is available
+# Verify model availability
 ollama list
 ```
 
-### 3. Start the Backend API
+### 3. Service Execution
 
-Open a terminal and run:
-
+**Backend API:**
 ```bash
 fastapi dev src/api/main.py
 ```
+- API Endpoint: `http://localhost:8000`
+- API Documentation: `http://localhost:8000/docs`
 
-✅ API will be available at: **<http://localhost:8000>**  
-📚 Interactive docs at: **<http://localhost:8000/docs>**
-
-### 4. Start the Gradio UI
-
-Open a **new terminal** (keep the API running) and run:
-
+**Gradio Interface:**
 ```bash
 python ui/gradio_app.py
 ```
+- Interface URL: `http://localhost:7860`
 
-✅ Web interface will open at: **<http://localhost:7860>**
+**Streamlit Interface:**
+```bash
+streamlit run ui/streamlit_app.py
+```
+- Interface URL: `http://localhost:8501`
 
 ---
 
-## 💡 Usage Guide
+## Usage Guide
 
-### Using the Gradio UI
+### Document Management
+- **Ingestion**: Upload PDF or text files via the Knowledge Base tab. The system processes these into semantic chunks for the vector store.
+- **Administration**: View uploaded documents and remove unnecessary files through the management interface.
 
-1. **Upload Documents**
-   - Navigate to the "📂 Knowledge Base" tab
-   - Click "Select PDF Files" and choose your documents
-   - Click "🚀 Ingest Document" to process them
+### Conversational Interface
+- **Interaction**: Use the chat interface to query the ingested knowledge base.
+- **Grounding**: The system retrieves relevant context and generates responses grounded in the provided documents.
+- **Session Management**: Use the "New Chat" feature to reset conversation history.
 
-2. **Chat with Your Documents**
-   - Switch to the "💬 Chat" tab
-   - Ask questions about your uploaded documents
-   - The system will retrieve relevant context and generate answers
+### REST API Reference
 
-3. **Manage Documents**
-   - View all uploaded documents in the table
-   - Delete documents you no longer need
-   - Refresh the list to see updates
-
-### Using the REST API
-
-#### Upload a Document
-
+#### Document Ingestion
+`POST /api/v1/ingest`
 ```bash
 curl -X POST "http://localhost:8000/api/v1/ingest" \
   -H "Content-Type: multipart/form-data" \
   -F "file=@/path/to/document.pdf"
 ```
 
-**Response:**
-
-```json
-{
-  "status": "success",
-  "document_id": 1,
-  "chunks_processed": 42
-}
-```
-
-#### Chat with Context
-
+#### Contextual Chat
+`POST /api/v1/chat`
 ```bash
 curl -X POST "http://localhost:8000/api/v1/chat" \
   -H "Content-Type: application/json" \
@@ -206,173 +186,108 @@ curl -X POST "http://localhost:8000/api/v1/chat" \
   }'
 ```
 
-**Response:**
-
-```json
-{
-  "conversation_id": 1,
-  "response": "Based on the documents, the main findings are...",
-  "sources": [
-    {"filename": "document.pdf", "chunk_id": "doc_1_chunk_3"}
-  ]
-}
-```
-
-#### List All Documents
-
-```bash
-curl -X GET "http://localhost:8000/api/v1/documents"
-```
-
-#### Delete a Document
-
-```bash
-curl -X DELETE "http://localhost:8000/api/v1/documents/1"
-```
+#### Document Metadata
+`GET /api/v1/documents`
+`DELETE /api/v1/documents/{id}`
 
 ---
 
-## ⚙️ Configuration
+## Configuration
 
 ### Environment Variables
 
-Create a `.env` file in the project root (optional):
+Optional configuration can be provided via a `.env` file in the project root:
 
 ```env
 # LLM Configuration
 LLM_MODEL_NAME=llama3.2
 OLLAMA_BASE_URL=http://localhost:11434
 
-# Paths (defaults to ./data/)
+# Storage Paths
 DATA_DIR=./data
 DOCUMENTS_DIR=./data/documents
 VECTOR_STORE_DIR=./data/vector_store
 DATABASE_PATH=./data/documents.db
 ```
 
-### Changing the LLM Model
+### Model Selection
 
-Edit `src/config/settings.py`:
+To change the default LLM, modify `src/config/settings.py`:
 
 ```python
-LLM_MODEL_NAME = "llama3.2"  # Change to any Ollama model
+LLM_MODEL_NAME = "llama3.2"  # Supports any model available via Ollama
 ```
-
-Available models: `llama3.2`, `mistral`, `codellama`, etc. ([Full list](https://ollama.ai/library))
 
 ---
 
-## 🧪 Running Tests
+## Testing
 
 ```bash
-# Run all tests
+# Execute full test suite
 pytest
 
-# Run with coverage
+# Execute tests with coverage reporting
 pytest --cov=src tests/
 
-# Run specific test file
+# Execute specific module tests
 pytest tests/test_orchestrator.py -v
 ```
 
 ---
 
-## 🔧 Troubleshooting
+## Troubleshooting
 
-### Issue: "Connection refused" when starting API
-
-**Solution:** Ensure Ollama is running:
-
-```bash
-# Check Ollama status
-curl http://localhost:11434/api/tags
-
-# If not running, start Ollama
-ollama serve
-```
-
-### Issue: "Module not found: sentence_transformers"
-
-**Solution:** Install the missing dependency:
-
-```bash
-pip install sentence-transformers
-```
-
-### Issue: Documents not being ingested
-
-**Possible causes:**
-
-- File is a duplicate (check hash in database)
-- Unsupported file format (only PDF and TXT supported)
-- File is corrupted or empty
-
-**Debug:**
-
-```bash
-# Check API logs for detailed error messages
-# Check data/documents/ directory for uploaded files
-```
-
-### Issue: Slow response times
-
-**Solutions:**
-
-- Use a smaller/faster LLM model (e.g., `llama3.2:1b`)
-- Reduce chunk retrieval limit in `orchestrator/service.py`
-- Ensure Ollama has sufficient RAM allocated
+| Issue | Resolution |
+| --- | --- |
+| **Connection Refused** | Ensure the Ollama service is running via `ollama serve`. |
+| **Missing Dependencies** | Run `pip install sentence-transformers` if the embedding module is missing. |
+| **Ingestion Failure** | Verify file format (PDF/TXT), check for duplicates, or inspect API logs. |
+| **Latency** | Consider a smaller model (e.g., `llama3.2:1b`) or optimize the chunk retrieval limit in `orchestrator/service.py`. |
 
 ---
 
-## 🗺️ Roadmap
+## Development Roadmap
 
-This is an **ongoing project** with planned enhancements:
+The project is actively evolving with the following planned enhancements:
 
-- [ ] **Multi-Agent System** (`agents/`) - Specialized agents for different tasks
-- [ ] **Knowledge Graph Integration** (`kg/`) - Entity extraction and graph-based verification
-- [ ] **Advanced Retrieval** (`retrieval/`) - Hybrid search, re-ranking, query expansion
-- [ ] **Explainability** (`explanation/`) - Visualize retrieval and generation process
-- [ ] **FAISS Support** - Alternative vector store for larger datasets
-- [ ] **More File Formats** - DOCX, Markdown, HTML support
-- [ ] **Streaming Responses** - Real-time token streaming in UI
-- [ ] **Multi-User Support** - User authentication and document isolation
-
----
-
-## 🤝 Contributing
-
-Contributions are welcome! Please:
-
-1. Fork the repository
-2. Create a feature branch (`git checkout -b feature/amazing-feature`)
-3. Commit your changes (`git commit -m 'Add amazing feature'`)
-4. Push to the branch (`git push origin feature/amazing-feature`)
-5. Open a Pull Request
+- **Multi-Agent Orchestration**: Specialized agents for distinct research tasks.
+- **Knowledge Graph Integration**: Entity extraction and graph-based verification.
+- **Advanced Retrieval**: Implementation of hybrid search and re-ranking.
+- **Explainability Layer**: Visualizations of the retrieval and generation pipeline.
+- **Expanded Format Support**: Integration of DOCX, Markdown, and HTML.
+- **Real-time Streaming**: Token streaming for the user interfaces.
+- **Multi-tenancy**: User authentication and isolated document namespaces.
 
 ---
 
-## 📄 License
+## Contributing
 
-This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
-
----
-
-## 🙏 Acknowledgments
-
-- **[Ollama](https://ollama.ai/)** - Local LLM inference
-- **[ChromaDB](https://www.trychroma.com/)** - Vector database
-- **[Sentence Transformers](https://www.sbert.net/)** - Embedding models
-- **[FastAPI](https://fastapi.tiangolo.com/)** - Modern web framework
-- **[Gradio](https://gradio.app/)** - UI framework
+Contributions are welcome. Please follow these steps:
+1. Fork the repository.
+2. Create a feature branch: `git checkout -b feature/your-feature-name`.
+3. Commit changes: `git commit -m 'Add descriptive commit message'`.
+4. Push to the branch and open a Pull Request.
 
 ---
 
-## 📞 Support
+## License
 
-- 📧 Email: <barikdibyasampad@gmail.com>
-- 🐛 Issues: [GitHub Issues](https://github.com/dsbarik/rag-research-assistant/issues)
-- 💬 Discussions: [GitHub Discussions](https://github.com/dsbarik/rag-research-assistant/discussions)
+This project is licensed under the MIT License. See the [LICENSE](LICENSE) file for details.
 
 ---
 
-**Built with ❤️ for privacy-conscious researchers and developers**
+## Acknowledgments
+
+- **Ollama**: Local LLM inference engine.
+- **ChromaDB**: Vector database for semantic storage.
+- **Sentence Transformers**: High-quality embedding models.
+- **FastAPI**: High-performance web framework.
+- **Gradio & Streamlit**: Rapid UI prototyping frameworks.
+
+---
+
+## Contact and Support
+
+- **Email**: <barikdibyasampad@gmail.com>
+- **Issues**: [GitHub Issues](https://github.com/dsbarik/rag-research-assistant/issues)
+- **Discussions**: [GitHub Discussions](https://github.com/dsbarik/rag-research-assistant/discussions)
