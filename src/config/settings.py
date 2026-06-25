@@ -1,5 +1,7 @@
 from pathlib import Path
 
+import torch
+
 # Project Root
 PROJECT_ROOT = Path(__file__).resolve().parents[2]
 
@@ -24,3 +26,10 @@ DATABASE_URL = f"sqlite:///{DATABASE_PATH}"
 
 # LLM
 LLM_MODEL_NAME = "gemma4:31b-cloud"
+
+DEVICE = "cpu"
+
+if torch.cuda.is_available():
+    DEVICE = "cuda"
+elif torch.backends.mps.is_available():
+    DEVICE = "mps"

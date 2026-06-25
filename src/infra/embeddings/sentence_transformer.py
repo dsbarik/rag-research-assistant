@@ -1,6 +1,6 @@
 from llama_index.embeddings.huggingface import HuggingFaceEmbedding
 
-from src.config.settings import EMBEDDING_MODEL
+from src.config.settings import DEVICE, EMBEDDING_MODEL
 
 
 def get_embedding_model() -> HuggingFaceEmbedding:
@@ -16,5 +16,5 @@ def get_embedding_model() -> HuggingFaceEmbedding:
     return HuggingFaceEmbedding(
         model_name=EMBEDDING_MODEL,
         embed_batch_size=32,
-        device="cpu",
+        device=DEVICE,
     )

@@ -3,6 +3,8 @@ from typing import List
 from llama_index.core.postprocessor import SentenceTransformerRerank
 from llama_index.core.schema import NodeWithScore, QueryBundle
 
+from src.config.settings import DEVICE
+
 
 class Reranker:
     """
@@ -25,6 +27,7 @@ class Reranker:
         self._reranker = SentenceTransformerRerank(
             model=model_name,
             top_n=top_n,
+            device=DEVICE,
         )
 
     def rerank(
