@@ -1,63 +1,62 @@
 # RAG Research Assistant
 
-A privacy-centric, locally deployed Retrieval-Augmented Generation (RAG) system designed for secure and intelligent conversations with personal or organizational documents.
+A privacy-centric, locally deployed Retrieval-Augmented Generation (RAG) system designed for secure and intelligent conversations with personal or organizational documents. Powered by **LlamaIndex**, **Docling**, and **Ollama**.
 
-[![Python 3.11+](https://img.shields.io/badge/python-3.11+-blue.svg)](https://www.python.org/downloads/) [![FastAPI](https://img.shields.io/badge/FastAPI-0.100+-green.svg)](https://fastapi.tiangolo.com/) [![Ollama](https://img.shields.io/badge/Ollama-LLM-orange.svg)](https://ollama.ai/) [![ChromaDB](https://img.shields.io/badge/ChromaDB-VectorStore-blueviolet.svg)](https://www.trychroma.com/) [![Gradio](https://img.shields.io/badge/Gradio-UI-orange.svg)](https://gradio.app/) [![Streamlit](https://img.shields.io/badge/Streamlit-UI-ff4b4b.svg)](https://streamlit.io/) [![Pytest](https://img.shields.io/badge/Pytest-Tests-green.svg)](https://docs.pytest.org/) [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
-
----
-
-## Overview
-
-The RAG Research Assistant provides a secure framework for context-aware conversations with documents using state-of-the-art retrieval and generation techniques. The system is designed for complete local execution, ensuring that no data leaves the host environment.
-
-### Core Concepts: Retrieval-Augmented Generation
-
-The system integrates three primary components to ensure accuracy and relevance:
-
-- **Vector Search**: Employs semantic similarity to retrieve the most relevant document segments.
-- **LLM Generation**: Produces grounded responses based on the retrieved context.
-- **Conversation Memory**: Manages state and context across multi-turn interactions.
+[![Python 3.11+](https://img.shields.io/badge/python-3.11+-blue.svg)](https://www.python.org/downloads/) [![FastAPI](https://img.shields.io/badge/FastAPI-0.100+-green.svg)](https://fastapi.tiangolo.com/) [![Ollama](https://img.shields.io/badge/Ollama-LLM-orange.svg)](https://ollama.ai/) [![LlamaIndex](https://img.shields.io/badge/LlamaIndex-Data_Framework-blue.svg)](https://www.llamaindex.ai/) [![Docling](https://img.shields.io/badge/Docling-Document_Parsing-purple.svg)](https://github.com/DS4SD/docling) [![Streamlit](https://img.shields.io/badge/Streamlit-UI-ff4b4b.svg)](https://streamlit.io/) [![Pytest](https://img.shields.io/badge/Pytest-Tests-green.svg)](https://docs.pytest.org/)
 
 ---
 
-## Key Features
+## 🌟 Overview
+
+The RAG Research Assistant provides a secure framework for context-aware conversations with your documents using state-of-the-art retrieval and generation techniques. The system is designed for complete local execution, ensuring that **no data leaves your host environment**.
+
+### Core Architecture
+
+The system pipeline is built on robust modern tooling:
+
+1. **Intelligent Ingestion (`Docling` & `LlamaIndex`)**: Uses IBM's Docling (with Apple Silicon MPS acceleration) to parse complex PDFs into Markdown, then chunks them logically using `MarkdownNodeParser`.
+2. **High-Quality Retrieval (`ChromaDB`)**: Embeds chunks using `BAAI/bge-large-en-v1.5` and performs vector search.
+3. **Re-ranking**: Boosts the most relevant context using `SentenceTransformerRerank` before sending it to the LLM.
+4. **LLM Generation (`Ollama`)**: Produces grounded responses based on the retrieved context using your local model of choice (e.g., `llama3.2`).
+5. **Conversation Memory**: Manages state and context using a custom SQLModel implementation on top of SQLite.
+
+---
+
+## ✨ Key Features
 
 | Feature | Description |
 | --------- | ------------- |
-| **Data Privacy** | All processing is performed locally without the use of cloud APIs. |
-| **Production Architecture** | FastAPI backend with asynchronous support and robust error handling. |
-| **Flexible Interfaces** | Support for both Gradio and Streamlit user interfaces. |
-| **Multi-Format Ingestion** | Support for PDF and text files with intelligent chunking strategies. |
-| **Context Management** | Automatic conversation windowing and summarization. |
-| **Persistent Storage** | Integrated ChromaDB vector store and SQLite metadata management. |
-| **Verified Quality** | Comprehensive test suite implemented with pytest. |
+| **Data Privacy** | 100% local execution. No cloud APIs, no data leaks. |
+| **Advanced Parsing** | Docling integration allows for superior parsing of tables, equations, and complex PDF layouts. |
+| **LlamaIndex Backbone** | Robust vector indexing, node parsing, and retrieval abstractions. |
+| **Dual UI Options** | Run the app via a polished **Streamlit** dashboard or a quick **Gradio** chat interface. |
+| **Context Management** | Automatic sliding-window conversation memory stored in SQLite. |
+| **Verified Quality** | Comprehensive test suite implemented with `pytest`. |
 
 ---
 
-## Architecture
+## 🏗️ System Architecture
 
-### System Diagram
-
-```bash
-┌─────────────────────────────────────┐
-│  Gradio / Streamlit UI / REST API     │
-│   (User Interface Layer)              │
-└─────────────────────────────────────┘
-                ↓
-┌─────────────────────────────────────┐
-│     OrchestratorService             │
-│   (Business Logic Layer)            │
-└─────────────────────────────────────┘
-                ↓
-┌──────────────┬────────────────┬────────┐
-│ DocumentSvc  │ ConversationMgr│   ...  │
-│ (Services)   │  (Services)    │        │
-└──────────────┴────────────────┴────────┘
-                ↓
-┌──────────────┬──────────────┬────────┐
-│  ChromaDB    │   Ollama     │ SQLite │
-│ (VectorStore)│   (LLM)      │  (DB)  │
-└──────────────┴──────────────┴────────┘
+```mermaid
+graph TD
+    UI[Gradio / Streamlit UI] <--> API[FastAPI Backend]
+    
+    subgraph Orchestrator Layer
+        API <--> ORCH[OrchestratorService]
+    end
+    
+    subgraph Service Layer
+        ORCH <--> DOCS[Document Service\nLlamaIndex + Docling]
+        ORCH <--> CONV[Conversation Manager]
+        ORCH <--> RET[Retrieval Service\nReranker]
+    end
+    
+    subgraph Data & Infra Layer
+        DOCS --> CHROMA[(ChromaDB)]
+        RET <--> CHROMA
+        CONV <--> SQL[(SQLite)]
+        RET --> OLLAMA[Ollama LLM]
+    end
 ```
 
 ### Project Structure
@@ -65,46 +64,36 @@ The system integrates three primary components to ensure accuracy and relevance:
 ```bash
 rag-research-assistant/
 ├── src/
-│   ├── api/              # FastAPI routes and schemas
+│   ├── api/              # FastAPI routes and REST schemas
 │   ├── config/           # Configuration and settings
-│   ├── conversation/     # Chat history and context management
-│   ├── documents/        # Document ingestion and chunking
+│   ├── conversation/     # SQLite chat history and sliding-window context
+│   ├── documents/        # Docling parsing and MarkdownNode chunking
 │   ├── infra/
 │   │   ├── db/          # SQLite session management
-│   │   ├── embeddings/  # Sentence Transformers integration
+│   │   ├── embeddings/  # HuggingFaceEmbedding (BGE-Large)
 │   │   ├── llm/         # Ollama LLM client
-│   │   └── vectorstore/ # ChromaDB wrapper
+│   │   └── vectorstore/ # LlamaIndex ChromaDB wrapper
+│   ├── retrieval/       # Search logic & SentenceTransformer Reranking
 │   ├── orchestrator/    # Main business logic coordinator
 │   └── utils/           # Logging and utilities
 ├── ui/
 │   ├── gradio_app.py    # Gradio-based UI
-│   └── streamlit_app.py # Streamlit-based UI
+│   └── streamlit_app.py # Streamlit-based UI (Recommended)
 ├── tests/               # Pytest test suite
-├── data/                # Local storage for databases and vectors
+├── data/                # Local storage for SQLite and ChromaDB
 ├── requirements.txt
 └── README.md
 ```
 
 ---
 
-## Prerequisites
+## 🚀 Installation and Setup
 
-The following components are required for installation and operation:
+### Prerequisites
 
-- **Python 3.11+**: [Download](https://www.python.org/downloads/)
-- **Ollama**: Installed and running. [Installation Guide](https://ollama.ai/download)
-- **Git**: For repository cloning.
-
-### Verify Ollama Service
-
-```bash
-# Check if the Ollama service is responsive
-curl http://localhost:11434/api/tags
-```
-
----
-
-## Installation and Setup
+- **Python 3.11+**
+- **Ollama**: Installed and running locally ([Download](https://ollama.ai/download))
+- **uv** (Recommended) or **conda/pip** for dependency management.
 
 ### 1. Environment Setup
 
@@ -113,134 +102,80 @@ curl http://localhost:11434/api/tags
 git clone https://github.com/dsbarik/rag-research-assistant.git
 cd rag-research-assistant
 
-# Initialize virtual environment
-python -m venv venv
-source venv/bin/activate  # Windows: venv\Scripts\activate
-
-# Install dependencies
-pip install -r requirements.txt
+# If using conda + uv (Recommended)
+conda create -n torch-env python=3.11
+conda activate torch-env
+uv pip install -r requirements.txt
 ```
 
 ### 2. Model Deployment
 
 ```bash
-# Pull the required LLM model
+# Pull the required LLM model (can be changed in settings)
 ollama pull llama3.2
 
-# Verify model availability
+# Verify model is running
 ollama list
 ```
 
-### 3. Service Execution
+### 3. Running the App
 
-**Backend API:**
+You need to run the **Backend API** and your choice of **UI**.
+
+**Terminal 1: Backend API**
 
 ```bash
 fastapi dev src/api/main.py
 ```
 
-- API Endpoint: `http://localhost:8000`
-- API Documentation: `http://localhost:8000/docs`
+*(API runs at `http://localhost:8000/docs`)*
 
-**Gradio Interface:**
-
-```bash
-python ui/gradio_app.py
-```
-
-- Interface URL: `http://localhost:7860`
-
-**Streamlit Interface:**
+**Terminal 2: Streamlit Interface (Recommended)**
 
 ```bash
 streamlit run ui/streamlit_app.py
 ```
 
-- Interface URL: `http://localhost:8501`
+*(App runs at `http://localhost:8501`)*
+
+**Alternative UI: Gradio**
+
+```bash
+python ui/gradio_app.py
+```
+
+*(App runs at `http://localhost:7860`)*
 
 ---
 
-## Usage Guide
+## 📖 Usage Guide
 
-### Document Management
-
-- **Ingestion**: Upload PDF or text files via the Knowledge Base tab. The system processes these into semantic chunks for the vector store.
-- **Administration**: View uploaded documents and remove unnecessary files through the management interface.
-
-### Conversational Interface
-
-- **Interaction**: Use the chat interface to query the ingested knowledge base.
-- **Grounding**: The system retrieves relevant context and generates responses grounded in the provided documents.
-- **Session Management**: Use the "New Chat" feature to reset conversation history.
-
-### REST API Reference
-
-#### Document Ingestion
-
-`POST /api/v1/ingest`
-
-```bash
-curl -X POST "http://localhost:8000/api/v1/ingest" \
-  -H "Content-Type: multipart/form-data" \
-  -F "file=@/path/to/document.pdf"
-```
-
-#### Contextual Chat
-
-`POST /api/v1/chat`
-
-```bash
-curl -X POST "http://localhost:8000/api/v1/chat" \
-  -H "Content-Type: application/json" \
-  -d '{
-    "message": "What are the main findings?",
-    "conversation_id": null
-  }'
-```
-
-#### Document Metadata
-
-`GET /api/v1/documents`
-`DELETE /api/v1/documents/{id}`
+1. **Ingest Documents**: Open the UI sidebar, upload your PDF/TXT files, and hit "Ingest". The backend will use Docling to parse the document, LlamaIndex to chunk it, and BGE-Large to embed it into ChromaDB.
+2. **Chat**: Use the main chat interface to ask questions. The system will search the vector store, rerank the best matches, and stream the context to Ollama.
+3. **Manage Knowledge**: View and delete uploaded documents directly from the sidebar.
+4. **New Chat**: Click the "New Chat" button to clear the sliding-window memory and start a fresh context.
 
 ---
 
-## Configuration
+## ⚙️ Configuration
 
-### Environment Variables
-
-Optional configuration can be provided via a `.env` file in the project root:
-
-```env
-# LLM Configuration
-LLM_MODEL_NAME=llama3.2
-OLLAMA_BASE_URL=http://localhost:11434
-
-# Storage Paths
-DATA_DIR=./data
-DOCUMENTS_DIR=./data/documents
-VECTOR_STORE_DIR=./data/vector_store
-DATABASE_PATH=./data/documents.db
-```
-
-### Model Selection
-
-To change the default LLM, modify `src/config/settings.py`:
+To change system defaults (like the embedding model or LLM), modify `src/config/settings.py`:
 
 ```python
-LLM_MODEL_NAME = "llama3.2"  # Supports any model available via Ollama
+# Default models
+LLM_MODEL_NAME = "llama3.2" 
+EMBEDDING_MODEL = "BAAI/bge-large-en-v1.5"
 ```
+
+*Note: If you change the embedding model, you must wipe the `./data/vector_store` directory as vector dimensions will change.*
 
 ---
 
-## Testing
+## 🧪 Testing
 
 ```bash
 # Execute full test suite
 pytest
-
-# Execute tests with coverage reporting
-pytest --cov=src tests/
 
 # Execute specific module tests
 pytest tests/test_orchestrator.py -v
@@ -248,60 +183,37 @@ pytest tests/test_orchestrator.py -v
 
 ---
 
-## Troubleshooting
+## 🛠️ Troubleshooting
 
 | Issue | Resolution |
 | --- | --- |
 | **Connection Refused** | Ensure the Ollama service is running via `ollama serve`. |
-| **Missing Dependencies** | Run `pip install sentence-transformers` if the embedding module is missing. |
-| **Ingestion Failure** | Verify file format (PDF/TXT), check for duplicates, or inspect API logs. |
-| **Latency** | Consider a smaller model (e.g., `llama3.2:1b`) or optimize the chunk retrieval limit in `orchestrator/service.py`. |
+| **Ingestion is Slow** | Docling uses advanced OCR and structure parsing. On Macs, it utilizes MPS acceleration automatically, but large PDFs may still take time. |
+| **Meta Tensor Error** | The embedding model uses `device="cpu"` by default to avoid PyTorch meta-tensor bugs on Apple Silicon. This is expected. |
+| **Poor Answers** | Ensure you have actually ingested the document. Check the `Managed Documents` list in the UI. |
 
 ---
 
-## Development Roadmap
+## 🤝 Contributing
 
-The project is actively evolving with the following planned enhancements:
-
-- **Multi-Agent Orchestration**: Specialized agents for distinct research tasks.
-- **Knowledge Graph Integration**: Entity extraction and graph-based verification.
-- **Advanced Retrieval**: Implementation of hybrid search and re-ranking.
-- **Explainability Layer**: Visualizations of the retrieval and generation pipeline.
-- **Expanded Format Support**: Integration of DOCX, Markdown, and HTML.
-- **Real-time Streaming**: Token streaming for the user interfaces.
-- **Multi-tenancy**: User authentication and isolated document namespaces.
-
----
-
-## Contributing
-
-Contributions are welcome. Please follow these steps:
+Contributions are welcome!
 
 1. Fork the repository.
-2. Create a feature branch: `git checkout -b feature/your-feature-name`.
-3. Commit changes: `git commit -m 'Add descriptive commit message'`.
+2. Create a feature branch: `git checkout -b feature/amazing-feature`.
+3. Commit changes: `git commit -m 'Add amazing feature'`.
 4. Push to the branch and open a Pull Request.
 
 ---
 
-## License
+## 📜 License
 
 This project is licensed under the MIT License. See the [LICENSE](LICENSE) file for details.
 
 ---
 
-## Acknowledgments
+## 🙏 Acknowledgments
 
-- **Ollama**: Local LLM inference engine.
-- **ChromaDB**: Vector database for semantic storage.
-- **Sentence Transformers**: High-quality embedding models.
-- **FastAPI**: High-performance web framework.
-- **Gradio & Streamlit**: Rapid UI prototyping frameworks.
-
----
-
-## Contact and Support
-
-- **Email**: <barikdibyasampad@gmail.com>
-- **Issues**: [GitHub Issues](https://github.com/dsbarik/rag-research-assistant/issues)
-- **Discussions**: [GitHub Discussions](https://github.com/dsbarik/rag-research-assistant/discussions)
+- **[LlamaIndex](https://www.llamaindex.ai/)**: The premier framework for data-aware LLM applications.
+- **[Docling](https://github.com/DS4SD/docling)**: IBM's incredible document parsing tool.
+- **[Ollama](https://ollama.ai/)**: Frictionless local LLM inference.
+- **[ChromaDB](https://www.trychroma.com/)**: High-performance local vector database.

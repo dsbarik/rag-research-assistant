@@ -44,7 +44,9 @@ with st.sidebar:
                 for uploaded_file in uploaded_files:
                     # Streamlit's UploadedFile has a .read() like a normal file
                     try:
-                        doc_id, num_chunks = app.ingest_file(uploaded_file, uploaded_file.name)
+                        result = app.ingest_file(uploaded_file, uploaded_file.name)
+                        doc_id = result.get("document_id", 0)
+                        num_chunks = result.get("chunks_processed", 0)
                         if num_chunks > 0:
                             st.success(f"✅ **{uploaded_file.name}**: Ingested {num_chunks} chunks.")
                         else:

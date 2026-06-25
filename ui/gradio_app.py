@@ -47,14 +47,13 @@ def get_rag_response(history, conversation_id_state):
         if not history or history[-1]["role"] != "user":
             return history, conversation_id_state
 
-
         last_user_content = history[-1]["content"]
-        
+
         if isinstance(last_user_content, list):
             last_user_message = last_user_content[0].get("text", "")
         else:
             last_user_message = str(last_user_content)
-            
+
         result = app.chat(last_user_message, conversation_id_state)
 
         raw_msg = result.get("response", "No response received!")
@@ -73,11 +72,17 @@ def get_rag_response(history, conversation_id_state):
             )
             bot_msg += "\n" + sources_html
 
-        history.append({"role": "assistant", "content": [{"type": "text", "text":bot_msg}]})
+        history.append({
+            "role": "assistant",
+            "content": [{"type": "text", "text": bot_msg}],
+        })
         return history, new_cov_id
 
     except Exception as e:
-        history.append({"role": "assistant", "content": [{"type":"text", "text":f"⚠️ **Error:** {str(e)}"}]})
+        history.append({
+            "role": "assistant",
+            "content": [{"type": "text", "text": f"⚠️ **Error:** {str(e)}"}],
+        })
         return history, conversation_id_state
 
 
@@ -92,7 +97,9 @@ def upload_file(files):
         filename = os.path.basename(file_path)
         try:
             with open(file_path, "rb") as stream:
-                doc_id, num_chunks = app.ingest_file(stream, filename)
+                result = app.ingest_file(stream, filename)
+                doc_id = result.get("document_id", 0)
+                num_chunks = result.get("chunks_processed", 0)
                 if num_chunks > 0:
                     results.append(f"✅ **{filename}**: Ingested {num_chunks} chunks.")
                 else:

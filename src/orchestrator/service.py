@@ -2,10 +2,10 @@ import logging
 import os
 import shutil
 
-from sqlmodel import Session, select
+from sqlmodel import Session
 
 from src.config import settings
-from src.config.settings import DOCUMENTS_DIR, LLM_MODEL_NAME
+from src.config.settings import DOCUMENTS_DIR
 from src.conversation.manager import ConversationManager
 from src.documents.schemas import Document
 from src.documents.service import DocumentService
@@ -22,7 +22,7 @@ class OrchestratorService:
         doc_service: DocumentService,
         conv_manager: ConversationManager,
         retrieval_service: RetrievalService,
-        llm: OllamaLLM
+        llm: OllamaLLM,
     ):
         self.session = session
         self.doc_service = doc_service
@@ -37,7 +37,11 @@ class OrchestratorService:
         try:
             with open(permanent_path, "xb") as buffer:
                 shutil.copyfileobj(file_stream, buffer)
+        except FileExistsError:
+            raise IOError(f"A file named '{filename}' already exists. Please delete the existing document first before re-uploading.")
         except Exception as e:
+            if permanent_path.exists():
+                os.remove(permanent_path)
             raise IOError(f"Failed to save file to storage: {str(e)}")
 
         try:
@@ -56,7 +60,11 @@ class OrchestratorService:
             logger.info(
                 f"Successfully ingested {len(nodes)} chunks for file: {filename}"
             )
-            return {"status": "success", "document_id": doc.id, "chunks_processed": len(nodes)}
+            return {
+                "status": "success",
+                "document_id": doc.id,
+                "chunks_processed": len(nodes),
+            }
 
         except Exception as e:
             if permanent_path.exists():

@@ -1,6 +1,8 @@
 from typing import Dict, List, Optional
 
 import requests
+from langchain_core.output_parsers import StrOutputParser
+from langchain_core.prompts import ChatPromptTemplate, MessagesPlaceholder
 from langchain_ollama import ChatOllama
 
 
@@ -46,7 +48,7 @@ class OllamaLLM:
         response = chat_llm.invoke(messages)
 
         # 3. Return the string content from the AIMessage object
-        return response.content
+        return str(response.content)
 
     def generate_with_context(
         self,
@@ -55,9 +57,14 @@ class OllamaLLM:
         conversation_history: List[Dict[str, str]] | None = None,
         temperature: float = 0.7,
     ) -> str:
-        messages = []
 
-        system_content = (
+        chat_llm = ChatOllama(
+            model=self.model,
+            base_url=self.base_url,
+            temperature=temperature,
+        )
+
+        system_template = (
             "You are an expert research assistant dedicated to providing accurate, verified information.\n\n"
             "STRICT GUIDELINES:\n"
             "1. **Context Priority**: Answer strictly based on the 'Context' provided below if possible.\n"
@@ -72,14 +79,22 @@ class OllamaLLM:
             "   - **CRITICAL**: All mathematical formulas, equations, and symbols MUST be written in LaTeX format (e.g., $E=mc^2$).\n"
             "4. **Forbidden Absolutes**: Unless sourced from context, label claims using words like 'Prevent', 'Guarantee', 'Fixes', 'Eliminates', 'Ensures'.\n"
             "5. **Correction Protocol**: If you realize a previous mistake, say: 'Correction: I previously made an unverified claim...'.\n\n"
-            f"Context:\n{context}"
+            "Context:\n{context}"
         )
 
-        messages.append({"role": "system", "content": system_content})
+        # Build the prompt using LangChain's template engine
+        prompt = ChatPromptTemplate.from_messages([
+            ("system", system_template),
+            MessagesPlaceholder(variable_name="chat_history"),
+            ("user", "{query}"),
+        ])
 
-        if conversation_history:
-            messages.extend(conversation_history)
+        # Create an LCEL (LangChain Expression Language) pipeline
+        chain = prompt | chat_llm | StrOutputParser()
 
-        messages.append({"role": "user", "content": query})
-
-        return self.generate(messages, temperature=temperature)
+        # Execute the chain
+        return chain.invoke({
+            "context": context,
+            "chat_history": conversation_history or [],
+            "query": query,
+        })
